@@ -4,9 +4,25 @@
 ?>
 <div id="item-page-content">
   <div id="primary" class="show">
+    <h3 class="exhibit-title-link">Exhibit: 
+    <?php echo exhibit_builder_link_to_exhibit(null,null,array('class' => 'link-to-exhibit')); ?>
+    </h3>
     <table>
       <tr>
         <td>
+          <?php
+            // fcd1, 01/23/14
+            // Print a link back to the exhibit page containing the item,
+            // which will be the previous page, assuming we came in via
+            // the exhibit page. As an extra test, make sure that
+            // $http_previous contains the uri to the exhibit
+            if (array_key_exists('HTTP_REFERER',$_SERVER)) {
+              $http_previous = $_SERVER['HTTP_REFERER'];
+	      if (strstr($http_previous,exhibit_builder_exhibit_uri())) {
+		echo '<a href="'.$http_previous.'">Return to exhibit page</a>';
+	      }
+            }
+          ?>
           <h1 class="item-title">Item Information</h1>
             <div id="itemfiles">
               <?php 
@@ -36,6 +52,7 @@
 									   'citation',
 									   array('no_escape' => true)); ?></p>
           </div>
+          <?php cul_display_links_to_exhibit_pages_containing_item(); ?>
         </td>
       </tr>
     </table>
