@@ -4,24 +4,44 @@
 ?>
 <div id="item-page-content">
   <div id="primary" class="show">
-    <h3 class="exhibit-title-link">Exhibit: 
+    <h3 class="exhibit-title-link">Exhibition: 
     <?php echo exhibit_builder_link_to_exhibit(null,null,array('class' => 'link-to-exhibit')); ?>
     </h3>
     <table>
       <tr>
         <td>
           <?php
-            // fcd1, 01/23/14
-            // Print a link back to the exhibit page containing the item,
-            // which will be the previous page, assuming we came in via
-            // the exhibit page. As an extra test, make sure that
-            // $http_previous contains the uri to the exhibit
-            if (array_key_exists('HTTP_REFERER',$_SERVER)) {
-              $http_previous = $_SERVER['HTTP_REFERER'];
-	      if (strstr($http_previous,exhibit_builder_exhibit_uri())) {
-		echo '<a href="'.$http_previous.'">Return to exhibit page</a>';
-	      }
+            // fcd1, 01/31/14:
+            // Retrieve, in an array, the list of exhibit pages containing the current item.
+            $exhibit_pages = CulCustomizePlugin::return_exhibit_pages_containing_current_item();
+
+            // fcd1, 01/31/14
+            // Print out a link back to the exhibit page we came from.
+            // The second parameter is set to TRUE to indicate this is a legacy exhibition
+            $exhibit_page_containing_item = 
+              CulCustomizePlugin::return_exhibit_page_to_link_back_to($exhibit_pages, TRUE);
+            if ($exhibit_page_containing_item) {
+	      $link_title = $exhibit->title.': ';
+	      $parent_page = $exhibit_page_containing_item->getParent();
+	      $link_title .= ( $parent_page ? $parent_page->title . ': ' : '');
+              $link_title .= $exhibit_page_containing_item->title.'</a></p>';
+              echo '<h3>View item in context</h3>';
+              echo '<p><a href="'.
+                html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page_containing_item)).
+		//                '">'.$exhibit->title.': '.$exhibit_page_containing_item->title.'</a></p>';
+                '">'.$link_title.'</a></p>';
             }
+
+            // fcd1, 01/31/14:
+            // Print out a list of other exhibit pages containing the item
+            // CulCustomizePlugin::display_links_to_exhibit_pages_containing_item takes
+            // care of filtering out $exhibit_page_containing_item, since we already
+            // displayed a link to that page
+            if(!empty($exhibit_pages)) {
+	      CulCustomizePlugin::display_links_to_exhibit_pages_containing_item(
+										 $exhibit_pages,
+										 $exhibit_page_containing_item);
+	    }
           ?>
           <h1 class="item-title">Item Information</h1>
             <div id="itemfiles">
@@ -52,7 +72,6 @@
 									   'citation',
 									   array('no_escape' => true)); ?></p>
           </div>
-          <?php cul_display_links_to_exhibit_pages_containing_item(); ?>
         </td>
       </tr>
     </table>
