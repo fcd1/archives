@@ -1,5 +1,7 @@
 </div><!--end id="wrap"-->
 <?php
+$exhibit = get_current_record('exhibit', false);
+if ($exhibit):
   $ur = exhibit_builder_link_to_exhibit();
   $e = '';
   if (stristr($ur,'nyccc'))
@@ -12,6 +14,7 @@
   else {
     echo '<p class="footer11px">Columbia University Libraries / University Archives / Rare Book &amp; Manuscript Library / Butler Library, 6th Fl. / 535 West 114th St. / New York, NY 10027 / (212) 854-3786 / <a href="mailto:uarchives@libraries.cul.columbia.edu">uarchives@libraries.cul.columia.edu</a></p>';
   } 
+endif;
 ?>
 
 <p class="copyright-footer"> 
